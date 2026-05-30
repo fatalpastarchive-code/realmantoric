@@ -1,26 +1,323 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
+@theme {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  /* Gentleman's Premium Palette - Warm & Natural Coffee/Sage/Cream */
+  --color-sage: #7E9F87;
+  --color-beige: #ECE6D9;
+  --color-soft-dark: #131211;
+  --color-warm-grey: #1B1A19;
+
+  /* Font */
+  --font-inter: var(--font-inter);
+  --font-display: "Inter", sans-serif;
+
+  /* Refined Border Radius */
+  --radius-3xl: 2rem;
+  --radius-2xl: 1.5rem;
+  --radius-xl: 1.25rem;
+  --radius-lg: 1rem;
+  --radius-md: 0.75rem;
+  --radius-sm: 0.5rem;
+  --radius: 0.75rem;
+
+  --animate-accordion-down: accordion-down 0.2s ease-out;
+  --animate-accordion-up: accordion-up 0.2s ease-out;
+  --animate-fade-in: fade-in 0.8s ease-out;
+
+  @keyframes accordion-down {
+    from {
+      height: 0;
+    }
+
+    to {
+      height: var(--radix-accordion-content-height);
+    }
+  }
+
+  @keyframes accordion-up {
+    from {
+      height: var(--radix-accordion-content-height);
+    }
+
+    to {
+      height: 0;
+    }
+  }
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+      transform: translateY(15px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer base {
+  :root, html[data-theme="default"] {
+    --background: #0A0A0A;
+    --foreground: #F5F5F7;
+
+    --card: #121212;
+    --card-foreground: #F5F5F7;
+
+    --popover: #121212;
+    --popover-foreground: #F5F5F7;
+
+    --primary: #10B981;
+    --primary-foreground: #0A0A0A;
+
+    --secondary: #1A1A1A;
+    --secondary-foreground: #F5F5F7;
+
+    --muted: #1A1A1A;
+    --muted-foreground: #9A9A9A;
+
+    --accent: #22D3EE;
+    --accent-foreground: #0A0A0A;
+
+    --destructive: #EF4444;
+    --destructive-foreground: #F8FAFC;
+
+    --border: rgba(255, 255, 255, 0.08);
+    --input: rgba(255, 255, 255, 0.04);
+    --ring: #10B981;
+  }
+
+  html[data-theme="emerald"] {
+    --background: #090E0B;
+    --foreground: #ECE6D9;
+
+    --card: #111A15;
+    --card-foreground: #ECE6D9;
+
+    --popover: #111A15;
+    --popover-foreground: #ECE6D9;
+
+    --primary: #5EA878;
+    --primary-foreground: #090E0B;
+
+    --secondary: #1A2820;
+    --secondary-foreground: #ECE6D9;
+
+    --muted: #1A2820;
+    --muted-foreground: #8FA195;
+
+    --accent: #DCEFE3;
+    --accent-foreground: #090E0B;
+
+    --destructive: #EF4444;
+    --destructive-foreground: #F8FAFC;
+
+    --border: rgba(94, 168, 120, 0.08);
+    --input: rgba(94, 168, 120, 0.04);
+    --ring: #5EA878;
+  }
+
+  html[data-theme="steel"] {
+    --background: #121417;
+    --foreground: #ECE6D9;
+
+    --card: #1B1E22;
+    --card-foreground: #ECE6D9;
+
+    --popover: #1B1E22;
+    --popover-foreground: #ECE6D9;
+
+    --primary: #7A93B0;
+    --primary-foreground: #121417;
+
+    --secondary: #252A30;
+    --secondary-foreground: #ECE6D9;
+
+    --muted: #252A30;
+    --muted-foreground: #8A98A7;
+
+    --accent: #D2DFEE;
+    --accent-foreground: #121417;
+
+    --destructive: #EF4444;
+    --destructive-foreground: #F8FAFC;
+
+    --border: rgba(122, 147, 176, 0.08);
+    --input: rgba(122, 147, 176, 0.04);
+    --ring: #7A93B0;
+  }
+
+  html[data-theme="void"] {
+    --background: #050505;
+    --foreground: #ECE6D9;
+
+    --card: #0D0D0D;
+    --card-foreground: #ECE6D9;
+
+    --popover: #0D0D0D;
+    --popover-foreground: #ECE6D9;
+
+    --primary: #D4D4D8;
+    --primary-foreground: #050505;
+
+    --secondary: #18181B;
+    --secondary-foreground: #ECE6D9;
+
+    --muted: #18181B;
+    --muted-foreground: #71717A;
+
+    --accent: #F4F4F5;
+    --accent-foreground: #050505;
+
+    --destructive: #EF4444;
+    --destructive-foreground: #F8FAFC;
+
+    --border: rgba(255, 255, 255, 0.06);
+    --input: rgba(255, 255, 255, 0.03);
+    --ring: #D4D4D8;
+  }
+}
+
+@layer base {
+  * {
+    border-color: var(--border);
+  }
+
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-inter);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+    letter-spacing: -0.0125em;
+  }
+
+  /* Elegant Smooth Transitions */
+  * {
+    transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow, transform;
+    transition-duration: 250ms;
+    transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  }
+}
+
+/* Premium Component Styles */
+.soft-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 24px;
+  padding: 1.5rem;
+  box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.05), 0 8px 32px 0 rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(12px);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@media (min-width: 768px) {
+  .soft-card {
+    padding: 1.75rem;
+  }
+}
+
+.soft-card:hover {
+  background: var(--secondary);
+  border-color: var(--primary);
+  transform: translateY(-3px);
+  box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.1), 0 16px 40px -10px rgba(0, 0, 0, 0.7), 0 0 1px 1px color-mix(in srgb, var(--primary) 15%, transparent);
+}
+
+.gentle-glow {
+  box-shadow: 0 0 35px var(--primary);
+  opacity: 0.05;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Typography for a Gentleman's Aesthetic */
+.heading-premium {
+  letter-spacing: -0.03em;
+  font-weight: 700;
+  line-height: 1.15;
+  color: #F8FAFC;
+}
+
+.text-warm {
+  color: #94A3B8;
+}
+
+.bg-gentle-gradient {
+  background: linear-gradient(145deg, #161616, #0A0A0A);
+}
+
+/* Premium Scoped Theme for Social Feed Page */
+.theme-social-feed {
+  --background: #0A0A0A;
+  --foreground: #F5F5F7;
+  --card: #121212;
+  --card-foreground: #F5F5F7;
+  --popover: #121212;
+  --popover-foreground: #F5F5F7;
+  --primary: #10B981;
+  --primary-foreground: #0A0A0A;
+  --secondary: #1A1A1A;
+  --secondary-foreground: #F5F5F7;
+  --muted: #1A1A1A;
+  --muted-foreground: #9A9A9A;
+  --accent: #22D3EE;
+  --accent-foreground: #0A0A0A;
+  --border: rgba(255, 255, 255, 0.08);
+  --input: rgba(255, 255, 255, 0.04);
+  --ring: #10B981;
+}
+
+/* Glassmorphic border, high-contrast and premium hover states for feed cards */
+.theme-social-feed .soft-card {
+  background: var(--card);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 24px;
+  box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.05), 0 8px 32px 0 rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(12px);
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.theme-social-feed .soft-card:hover {
+  background: #161616;
+  border-color: rgba(16, 185, 129, 0.3);
+  transform: translateY(-3px);
+  box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.1), 0 16px 40px -10px rgba(16, 185, 129, 0.08), 0 0 1px 1px rgba(16, 185, 129, 0.15);
 }
