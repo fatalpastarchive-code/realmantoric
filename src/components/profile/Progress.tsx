@@ -6,7 +6,8 @@ import {
   Activity,
   Zap,
   Flame,
-  BarChart3
+  BarChart3,
+  TrendingUp
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
