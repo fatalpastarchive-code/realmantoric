@@ -3,7 +3,7 @@
 import React from "react";
 import { 
   Users, 
-  TrendingUp, 
+  Activity, 
   MessageSquare, 
   Plus, 
   ChevronRight,
@@ -19,7 +19,7 @@ import { cn } from "@/lib/utils";
 export function SocialSidebar() {
   const categories = [
     { label: "All Feed", icon: Globe, active: true },
-    { label: "Popular", icon: TrendingUp, active: false },
+    { label: "Popular", icon: Activity, active: false },
     { label: "Following", icon: Users, active: false },
     { label: "Q&A", icon: MessageSquare, active: false },
   ];

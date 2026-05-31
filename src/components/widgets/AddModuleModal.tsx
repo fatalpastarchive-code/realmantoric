@@ -8,7 +8,7 @@ import {
   Calendar, 
   Brain, 
   Sparkles, 
-  BarChart3,
+  BarChart,
   Bookmark,
   Target
 } from "lucide-react";
@@ -29,7 +29,7 @@ const AVAILABLE_WIDGETS: WidgetType[] = [
   { id: "habit", name: "Habit Tracker", description: "Track your consistency and discipline.", icon: Target, category: "planning" },
   { id: "calendar", name: "Time Log", description: "Schedule your high-impact operations.", icon: Calendar, category: "planning" },
   { id: "ai_briefing", name: "AI Tactical Briefing", description: "Intelligent summary of your current directives.", icon: Brain, category: "intel" },
-  { id: "analytics", name: "Forge Insights", description: "Visual analysis of your performance.", icon: BarChart3, category: "intel" },
+  { id: "analytics", name: "Forge Insights", description: "Visual analysis of your performance.", icon: BarChart, category: "intel" },
   { id: "journal", name: "Iron Journal", description: "Daily reflections and stoic observations.", icon: Bookmark, category: "intel" },
   { id: "milestone", name: "Milestone Tracker", description: "Track your journey toward mastery.", icon: Sparkles, category: "planning" },
 ];

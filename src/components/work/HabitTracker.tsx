@@ -5,7 +5,7 @@ import {
   Plus, 
   Trash2, 
   Flame, 
-  TrendingUp, 
+  Activity, 
   CheckCircle2, 
   ChevronLeft, 
   ChevronRight,
@@ -357,7 +357,7 @@ export function HabitTracker() {
         <Card className="bg-black/40 border-white/5 p-6 flex flex-col justify-center items-center space-y-2 rounded-[32px] shadow-xl relative overflow-hidden group">
           <div className="absolute inset-0 bg-blue-500/5 opacity-0 group-hover:opacity-100 transition-opacity" />
           <div className="flex items-center gap-3 text-blue-500 relative z-10">
-            <TrendingUp className="w-7 h-7" />
+            <Activity className="w-7 h-7" />
             <span className="text-4xl font-black">%{stats.completionRate}</span>
           </div>
           <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.3em] relative z-10">Domain Yield</span>

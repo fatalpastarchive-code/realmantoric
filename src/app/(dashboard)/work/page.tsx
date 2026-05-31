@@ -17,7 +17,7 @@ import {
   EyeOff,
   BookOpen,
   FolderHeart,
-  TrendingUp,
+  Activity,
   Settings,
   Calendar,
   Layers,

@@ -4,7 +4,7 @@ import React from "react";
 import { 
   Sparkles, 
   Heart, 
-  TrendingUp,
+  Activity,
   ArrowUpRight,
   ShieldAlert,
   User
@@ -23,7 +23,7 @@ export function DashboardSidebar({ activeSection, onSectionChange }: SidebarProp
   const filterItems = [
     { label: "For You", icon: Sparkles, href: "/social/feed" },
     { label: "Following", icon: Heart, href: "/social/feed" },
-    { label: "Trending", icon: TrendingUp, href: "/social/feed" },
+    { label: "Trending", icon: Activity, href: "/social/feed" },
   ];
 
   return (

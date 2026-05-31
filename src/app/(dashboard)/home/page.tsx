@@ -12,7 +12,7 @@ import {
   Layout,
   Languages,
   MessageSquare,
-  TrendingUp,
+  Activity,
   Target,
   Calendar,
   Flame,
@@ -32,7 +32,7 @@ const MOODS = [
 
 const QUICK_STATS = [
   { label: "Focus Streak", value: "12 Days", icon: Flame, color: "text-[#34D399]", accent: "from-[#10B981]/10" },
-  { label: "Completion", value: "85%", icon: TrendingUp, color: "text-[#22D3EE]", accent: "from-[#22D3EE]/10" },
+  { label: "Completion", value: "85%", icon: Activity, color: "text-[#22D3EE]", accent: "from-[#22D3EE]/10" },
   { label: "Daily Goal", value: "4 / 5", icon: Target, color: "text-slate-300", accent: "from-white/5" },
   { label: "Mood", value: "Stoic", icon: Sparkles, color: "text-[#34D399]", accent: "from-[#10B981]/10" },
 ];

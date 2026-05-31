@@ -16,7 +16,7 @@ import {
   Radio,
   Sparkles,
   Heart,
-  TrendingUp,
+  Activity,
   Compass,
   Link as LinkIcon
 } from "lucide-react";

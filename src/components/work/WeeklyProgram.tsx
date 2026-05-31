@@ -10,7 +10,7 @@ import {
   ChevronRight,
   Clock,
   Sparkles,
-  TrendingUp,
+  Activity,
   X
 } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -136,7 +136,7 @@ export function WeeklyProgram() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <Card className="md:col-span-1 bg-black/40 border-white/5 p-6 rounded-[32px] flex flex-col justify-center space-y-2">
           <div className="flex items-center gap-2 text-primary">
-            <TrendingUp className="w-5 h-5" />
+            <Activity className="w-5 h-5" />
             <span className="text-3xl font-black">%{stats.rate}</span>
           </div>
           <span className="text-[10px] font-black text-slate-500 uppercase tracking-[0.2em]">Weekly Progress</span>

@@ -5,9 +5,7 @@ import {
   Calendar,
   Activity,
   Zap,
-  Flame,
-  BarChart3,
-  TrendingUp
+  Flame
 } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
@@ -73,8 +71,8 @@ export function ProfileProgress() {
             </div>
             <div className="space-y-6">
               {[
-                { label: "vs Last Week", value: "+12.4%", icon: TrendingUp, positive: true },
-                { label: "vs Average", value: "+4.2%", icon: BarChart3, positive: true },
+                { label: "vs Last Week", value: "+12.4%", icon: Activity, positive: true },
+                { label: "vs Average", value: "+4.2%", icon: Activity, positive: true },
               ].map((m, i) => (
                 <div key={i} className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
