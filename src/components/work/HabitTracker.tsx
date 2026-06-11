@@ -12,7 +12,7 @@ import {
   Info,
   Sparkles,
   Trophy,
-  X,
+
   Target,
   Dumbbell,
   Book,
@@ -294,7 +294,7 @@ export function HabitTracker() {
               <div className="grid grid-cols-2 gap-6">
                 <div className="space-y-3">
                   <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 ml-1">Domain</Label>
-                  <Select value={newHabitCategory} onValueChange={(val) => val && setNewHabitCategory(val as Category)}>
+                  <Select value={newHabitCategory} onValueChange={(val: Category) => setNewHabitCategory(val)}>
                     <SelectTrigger className="bg-black/40 border-white/[0.08] rounded-2xl h-14 px-6">
                       <SelectValue placeholder="Domain" />
                     </SelectTrigger>
