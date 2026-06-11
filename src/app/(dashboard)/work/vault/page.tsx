@@ -109,23 +109,11 @@ export default function VaultPage() {
           <main className="col-span-1 lg:col-span-9 xl:col-span-10 space-y-8 pb-20">
             
             {/* Elegant Header Area */}
-            <header className="relative w-full rounded-[32px] overflow-hidden border border-white/5 bg-[#121212] p-8 md:p-12 flex flex-col justify-between shadow-2xl group">
-              {/* Premium Glow Effects */}
-              <div className="absolute inset-0 bg-gradient-to-br from-[#10B981]/[0.03] via-transparent to-[#22D3EE]/[0.02] pointer-events-none group-hover:from-[#10B981]/[0.05] transition-all duration-700" />
-              <div className="absolute right-0 top-0 w-[500px] h-[500px] bg-[#10B981]/10 rounded-full blur-[120px] pointer-events-none translate-x-1/3 -translate-y-1/3 opacity-50 group-hover:opacity-70 transition-all duration-1000" />
-              
+            <header className="relative w-full py-4 flex flex-col justify-between min-h-[100px] mb-4">
               <div className="relative z-10 flex flex-col md:flex-row items-start md:items-end justify-between gap-8">
-                <div className="space-y-4 max-w-2xl">
-                  <div className="inline-flex items-center gap-2.5 px-3.5 py-1.5 rounded-xl bg-[#10B981]/10 border border-[#10B981]/20 text-[#34D399] text-[10px] font-black uppercase tracking-widest shadow-[0_0_15px_rgba(16,185,129,0.15)] select-none">
-                    <BookOpen className="w-3.5 h-3.5" />
-                    Library / Mahzen
-                  </div>
-                  <h1 className="text-4xl md:text-5xl font-black tracking-tight text-white leading-none">
-                    The Vault
-                  </h1>
-                  <p className="text-slate-400 text-[15px] font-semibold leading-relaxed max-w-xl">
-                    A curated center for the mind. Hand-picked articles and tactical podcasts designed to nourish your intellect and deepen your focus.
-                  </p>
+                <div className="space-y-2 max-w-2xl">
+                  <h1 className="text-3xl font-black tracking-tight leading-none">The Vault</h1>
+                  <p className="text-muted-foreground text-sm font-medium">A curated center for the mind. Hand-picked articles and tactical podcasts designed to nourish your intellect and deepen your focus.</p>
                 </div>
 
                 {/* Sleek Segmented Control for Tabs */}

@@ -13,7 +13,9 @@ import {
   Sparkles,
   Activity,
   Flame,
-  BookOpen
+  BookOpen,
+  Wallet,
+  Bot
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -25,10 +27,11 @@ export function WorkSidebar({ activePath }: SidebarProps) {
   const pathname = usePathname();
 
   const menuItems = [
+    { label: "Mantoric AI", href: "/work/mantoric-ai", icon: Bot },
     { label: "Sanctum Work", href: "/work", icon: Target },
-    { label: "Private Workspace", href: "/work/private", icon: Lock },
     { label: "The Vault", href: "/work/vault", icon: BookOpen },
     { label: "Habit Tracker", href: "/work/habits", icon: Flame }, // Added Habit Tracker
+    { label: "Pocket", href: "/work/pocket", icon: Wallet },
     { label: "Arsenal Store", href: "/work/arsenal", icon: ShieldAlert },
     { label: "Deep Sessions", href: "/work/deep-sessions", icon: Zap },
     { label: "Weekly Review", href: "/work/weekly-review", icon: Calendar },
@@ -64,21 +67,6 @@ export function WorkSidebar({ activePath }: SidebarProps) {
         </nav>
       </div>
 
-      {/* Member Signature Capsule */}
-      <div className="soft-card bg-secondary/10 border-border/40 p-6 space-y-4 rounded-3xl relative overflow-hidden group">
-        <div className="absolute top-0 right-0 w-24 h-24 bg-primary/5 rounded-full blur-2xl group-hover:bg-primary/10 transition-all duration-500" />
-        <div className="flex items-center gap-2 text-primary text-[10px] font-bold uppercase tracking-[0.15em] select-none">
-          <Sparkles className="w-3.5 h-3.5" />
-          Growth Culture
-        </div>
-        <p className="text-xs text-muted-foreground leading-relaxed font-semibold">
-          "Great achievements are not reached in a single day, but through patient steps taken every day."
-        </p>
-        <div className="flex items-center justify-between text-[9px] font-bold text-muted-foreground/60 uppercase tracking-widest pt-2 border-t border-border/30">
-          <span>Focus Point</span>
-          <ArrowUpRight className="w-3 h-3 text-muted-foreground/60 group-hover:text-primary group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
-        </div>
-      </div>
     </aside>
   );
 }

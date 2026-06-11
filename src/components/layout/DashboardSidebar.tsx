@@ -55,22 +55,6 @@ export function DashboardSidebar({ activeSection, onSectionChange }: SidebarProp
         </nav>
       </div>
 
-      {/* Member Signature Capsule */}
-      <div className="soft-card bg-secondary/10 border-border/40 p-6 space-y-4 rounded-3xl relative overflow-hidden group">
-        <div className="absolute top-0 right-0 w-24 h-24 bg-primary/5 rounded-full blur-2xl group-hover:bg-primary/10 transition-all duration-500" />
-        <div className="flex items-center gap-2 text-primary text-[10px] font-bold uppercase tracking-[0.15em] select-none">
-          <ShieldAlert className="w-3.5 h-3.5" />
-          Community
-        </div>
-        <p className="text-xs text-muted-foreground leading-relaxed font-semibold">
-          "A sanctuary of honest and sincere shared experiences, where we grow together."
-        </p>
-        <div className="flex items-center justify-between text-[9px] font-bold text-muted-foreground/60 uppercase tracking-widest pt-2 border-t border-border/30">
-          <span>Mutual Growth</span>
-          <ArrowUpRight className="w-3 h-3 text-muted-foreground/60 group-hover:text-primary group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
-        </div>
-      </div>
-
     </aside>
   );
 }

@@ -23,6 +23,7 @@ import { ProfileProgress } from "@/components/profile/Progress";
 import { ProfileJournal } from "@/components/profile/Journal";
 import { ProfileSettings } from "@/components/profile/Settings";
 import { DashboardSidebar } from "@/components/layout/DashboardSidebar";
+import { ProfileRightPanel } from "@/components/profile/ProfileRightPanel";
 
 type Tab = "Overview" | "Progress" | "Journal" | "Settings";
 
@@ -48,7 +49,7 @@ export default function ProfilePage() {
           </aside>
 
           {/* Main Content Area */}
-          <main className="lg:col-span-9 xl:col-span-10 space-y-8">
+          <main className="lg:col-span-6 xl:col-span-7 space-y-8">
             
             {/* Profile Header */}
             <Card className="bg-[#121212] border-white/5 rounded-[40px] overflow-hidden shadow-2xl relative">
@@ -139,6 +140,11 @@ export default function ProfilePage() {
             </div>
 
           </main>
+
+          {/* Right Sidebar - Sticky Collapsible Panel */}
+          <aside className="hidden lg:block lg:col-span-3 xl:col-span-3 sticky top-[5.5rem] self-start h-[calc(100vh-8rem)]">
+            <ProfileRightPanel />
+          </aside>
         </div>
       </div>
     </div>

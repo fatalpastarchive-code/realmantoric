@@ -16,8 +16,7 @@ export const metadata: Metadata = {
   description: "A minimalist sanctuary for high-performance discipline.",
 };
 
-import { DeepWorkProvider } from "@/context/DeepWorkContext";
-import { DeepWorkOverlay } from "@/components/widgets/DeepWorkOverlay";
+
 
 export default function RootLayout({
   children,
@@ -32,16 +31,6 @@ export default function RootLayout({
             (function() {
               try {
                 var theme = localStorage.getItem("mantoric-theme") || "default";
-                var themes = {
-                  default: { primary: "#10B981", primaryFg: "#0A0A0A" },
-                  emerald: { primary: "#5EA878", primaryFg: "#090E0B" },
-                  steel: { primary: "#7A93B0", primaryFg: "#121417" },
-                  void: { primary: "#D4D4D8", primaryFg: "#050505" }
-                };
-                var t = themes[theme] || themes.default;
-                document.documentElement.style.setProperty("--primary", t.primary);
-                document.documentElement.style.setProperty("--primary-foreground", t.primaryFg);
-                document.documentElement.style.setProperty("--ring", t.primary);
                 document.documentElement.setAttribute("data-theme", theme);
               } catch (e) {}
             })();
@@ -59,10 +48,7 @@ export default function RootLayout({
             enableSystem={false}
             forcedTheme="dark"
           >
-            <DeepWorkProvider>
-              <DeepWorkOverlay />
-              {children}
-            </DeepWorkProvider>
+            {children}
           </ThemeProvider>
         </body>
       </html>

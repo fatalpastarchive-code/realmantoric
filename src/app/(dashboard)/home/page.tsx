@@ -17,7 +17,8 @@ import {
   Calendar,
   Flame,
   Moon,
-  Sun
+  Sun,
+  Bot
 } from "lucide-react";
 import { DailyBriefWidget } from "@/components/widgets/DailyBriefWidget";
 import { Button } from "@/components/ui/button";
@@ -298,6 +299,26 @@ export default function HomePage() {
               </div>
               <Button variant="ghost" className="w-full h-8 text-[9px] font-bold uppercase tracking-widest text-slate-500 hover:text-white border-t border-white/5 pt-2 cursor-pointer transition-none">
                 See All
+              </Button>
+            </div>
+
+            {/* Mantoric AI Coach CTA */}
+            <div className="soft-card bg-gradient-to-b from-[#10B981]/10 to-transparent border-[#10B981]/20 p-5 rounded-2xl shadow-xl space-y-4 text-center relative overflow-hidden">
+              <div className="absolute -top-4 -right-4 opacity-10">
+                <Bot className="w-24 h-24 text-[#10B981]" />
+              </div>
+              <div className="w-10 h-10 rounded-xl bg-[#10B981]/20 flex items-center justify-center mx-auto border border-[#10B981]/30 relative z-10">
+                <Bot className="w-5 h-5 text-[#34D399]" />
+              </div>
+              <div className="space-y-1 relative z-10">
+                <h4 className="text-sm font-extrabold text-white">Mantoric AI Coach</h4>
+                <p className="text-[10px] text-slate-400 leading-relaxed">Your personal Stoic and performance coach is ready.</p>
+              </div>
+              <Button
+                onClick={() => { window.location.href = "/work/mantoric-ai"; }}
+                className="w-full h-9 rounded-xl bg-gradient-to-r from-[#10B981] to-[#34D399] text-black font-extrabold text-[10px] uppercase tracking-wider transition-none shadow-md shadow-[#10B981]/15 cursor-pointer relative z-10"
+              >
+                Start Session
               </Button>
             </div>
 

@@ -286,7 +286,7 @@ export function WeeklyProgram() {
               <div className="grid grid-cols-2 gap-6">
                 <div className="space-y-3">
                   <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 ml-1">Category</Label>
-                  <Select value={newTaskCategory} onValueChange={(val: Category) => setNewTaskCategory(val)}>
+                  <Select value={newTaskCategory} onValueChange={(val) => val && setNewTaskCategory(val as Category)}>
                     <SelectTrigger className="bg-black/40 border-white/[0.08] rounded-2xl h-14 px-6">
                       <SelectValue placeholder="Category" />
                     </SelectTrigger>

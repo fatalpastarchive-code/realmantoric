@@ -1,196 +1,343 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { 
   Zap,
-  ArrowRight,
-  Sparkles,
-  Hourglass,
-  CheckCircle2,
-  Lock,
-  Layers,
-  Wrench,
-  Send
+  Activity,
+  Flame,
+  Clock,
+  CalendarDays,
+  Target,
+  Play,
+  Pause,
+  RotateCcw,
+  Coffee
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { WorkSidebar } from "@/components/layout/WorkSidebar";
+import { cn } from "@/lib/utils";
+
+// Types
+interface PomodoroSession {
+  timestamp: number;
+  dateStr: string; // YYYY-MM-DD
+  minutes: number;
+}
 
 export default function DeepSessionsPage() {
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [requestText, setRequestText] = useState("");
-  const [showRequestSuccess, setShowRequestSuccess] = useState(false);
+  // Timer State
+  const [mode, setMode] = useState<"focus" | "break">("focus");
+  const [timeLeft, setTimeLeft] = useState(25 * 60);
+  const [isActive, setIsActive] = useState(false);
+  const [isFullScreen, setIsFullScreen] = useState(false);
 
-  const handleRequestSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!requestText.trim()) return;
-    setIsSubmitting(true);
-    setTimeout(() => {
-      setIsSubmitting(false);
-      setShowRequestSuccess(true);
-      setRequestText("");
-      setTimeout(() => setShowRequestSuccess(false), 4000);
-    }, 1200);
+  // History State
+  const [sessions, setSessions] = useState<PomodoroSession[]>([]);
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+    const saved = localStorage.getItem("mantoric-pomodoro-history");
+    if (saved) {
+      try {
+        setSessions(JSON.parse(saved));
+      } catch (e) {}
+    }
+  }, []);
+
+  const saveSession = (minutes: number) => {
+    const today = new Date();
+    const dateStr = today.toISOString().split("T")[0];
+    const newSession = { timestamp: Date.now(), dateStr, minutes };
+    const updated = [...sessions, newSession];
+    setSessions(updated);
+    localStorage.setItem("mantoric-pomodoro-history", JSON.stringify(updated));
   };
 
-  const triggerEarlyAccess = () => {
-    setRequestText("Requesting Early Access to Deep Sessions focus metrics module. Blueprint secured: ");
-    window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
+  const tick = useCallback(() => {
+    if (timeLeft > 0) {
+      setTimeLeft(t => t - 1);
+    } else {
+      setIsActive(false);
+      setIsFullScreen(false);
+      // Completed!
+      if (mode === "focus") {
+        saveSession(25);
+        setMode("break");
+        setTimeLeft(5 * 60);
+      } else {
+        setMode("focus");
+        setTimeLeft(25 * 60);
+      }
+    }
+  }, [timeLeft, mode, sessions]);
+
+  useEffect(() => {
+    let interval: any = null;
+    if (isActive) {
+      interval = setInterval(tick, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [isActive, tick]);
+
+  const toggleTimer = () => {
+    setIsActive(!isActive);
+    if (!isActive && mode === "focus") {
+      setIsFullScreen(true);
+    }
   };
+
+  const resetTimer = () => {
+    setIsActive(false);
+    setTimeLeft(mode === "focus" ? 25 * 60 : 5 * 60);
+  };
+
+  const setTimerMode = (newMode: "focus" | "break") => {
+    setMode(newMode);
+    setTimeLeft(newMode === "focus" ? 25 * 60 : 5 * 60);
+    setIsActive(false);
+  };
+
+  const formatTime = (seconds: number) => {
+    const m = Math.floor(seconds / 60);
+    const s = seconds % 60;
+    return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+  };
+
+  // Compute Stats
+  const stats = useMemo(() => {
+    const totalMinutes = sessions.reduce((acc, s) => acc + s.minutes, 0);
+    const hours = Math.floor(totalMinutes / 60);
+    const mins = totalMinutes % 60;
+
+    const uniqueDays = new Set(sessions.map(s => s.dateStr)).size;
+    const dailyAvgMinutes = uniqueDays > 0 ? Math.floor(totalMinutes / uniqueDays) : 0;
+
+    return {
+      totalFocus: `${hours}h ${mins}m`,
+      totalSessions: sessions.length,
+      currentStreak: uniqueDays, // Simplified streak logic
+      dailyAverage: `${Math.floor(dailyAvgMinutes / 60)}h ${dailyAvgMinutes % 60}m`
+    };
+  }, [sessions]);
+
+  // Compute Weekly Graph Data
+  const weeklyData = useMemo(() => {
+    const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+    const today = new Date();
+    const result = [];
+    
+    // Get last 7 days
+    for (let i = 6; i >= 0; i--) {
+      const d = new Date(today);
+      d.setDate(today.getDate() - i);
+      const dateStr = d.toISOString().split("T")[0];
+      const dayName = days[d.getDay()];
+      
+      const dayMinutes = sessions
+        .filter(s => s.dateStr === dateStr)
+        .reduce((acc, s) => acc + s.minutes, 0);
+
+      result.push({ day: dayName, minutes: dayMinutes });
+    }
+
+    const maxMins = Math.max(...result.map(r => r.minutes), 120); // baseline 120
+    
+    return result.map(r => ({
+      ...r,
+      height: `${Math.max((r.minutes / maxMins) * 100, 5)}%`
+    }));
+
+  }, [sessions]);
+
+  // Full Screen Render
+  if (isFullScreen) {
+    return (
+      <div className="fixed inset-0 z-[200] flex flex-col items-center justify-center bg-background animate-in fade-in duration-700">
+        <button 
+          onClick={() => setIsFullScreen(false)}
+          className="absolute top-10 right-10 px-6 py-2 rounded-xl text-[10px] font-bold uppercase tracking-widest bg-secondary/50 hover:bg-secondary text-muted-foreground hover:text-foreground transition-all"
+        >
+          Exit Focus
+        </button>
+
+        <div className="flex gap-4 p-2 bg-secondary/30 rounded-2xl border mb-16">
+          <button 
+            onClick={() => setTimerMode("focus")}
+            className={cn("flex items-center gap-2 px-6 py-2.5 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all", mode === "focus" ? "bg-primary text-primary-foreground" : "text-muted-foreground")}
+          >
+            <Zap className="w-4 h-4" /> Focus
+          </button>
+          <button 
+            onClick={() => setTimerMode("break")}
+            className={cn("flex items-center gap-2 px-6 py-2.5 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all", mode === "break" ? "bg-primary text-primary-foreground" : "text-muted-foreground")}
+          >
+            <Coffee className="w-4 h-4" /> Break
+          </button>
+        </div>
+
+        <div className="text-[25vw] md:text-[250px] font-black tracking-tighter tabular-nums leading-none drop-shadow-2xl">
+          {formatTime(timeLeft)}
+        </div>
+
+        <div className="mt-20 flex gap-6">
+          <button 
+            onClick={toggleTimer}
+            className={cn(
+              "h-20 px-12 rounded-2xl font-black uppercase tracking-widest text-sm transition-all border",
+              isActive ? "bg-secondary text-foreground hover:bg-secondary/80" : "bg-primary text-primary-foreground hover:scale-105"
+            )}
+          >
+            {isActive ? "Pause" : "Start"}
+          </button>
+          <button 
+            onClick={resetTimer}
+            className="h-20 w-20 rounded-2xl bg-secondary/30 hover:bg-secondary text-muted-foreground hover:text-foreground flex items-center justify-center transition-all border"
+          >
+            <RotateCcw className="w-6 h-6" />
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isMounted) return null;
 
   return (
-    <div className="min-h-screen bg-background text-foreground selection:bg-sage/20 relative">
+    <div className="min-h-screen bg-background text-foreground selection:bg-primary/20 relative">
       <div className="mx-auto max-w-[1550px] w-full px-4 sm:px-6 lg:px-8 py-8 space-y-8">
         
-        {/* Responsive Grid System: Sidebar on Left, Content on Right */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-
-          {/* Left Column: Dedicated Work Sidebar Navigation - Sticky */}
           <aside className="hidden lg:block lg:col-span-3 xl:col-span-2 sticky top-[5.5rem] self-start">
             <WorkSidebar />
           </aside>
 
-          {/* Right Column: Main Store Space (9 Cols) */}
           <main className="col-span-1 lg:col-span-9 xl:col-span-10 space-y-8 pb-20">
             
-            {/* Header - Identical Scale and Branding */}
-            <header className="relative w-full rounded-3xl overflow-hidden border border-white/5 bg-[#121212] p-6 sm:p-8 flex flex-col justify-between min-h-[160px] md:min-h-[180px] shadow-2xl">
-              <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/30 to-[#10B981]/5 pointer-events-none" />
-              <div className="absolute right-8 top-1/2 -translate-y-1/2 opacity-[0.04] scale-[2.5] pointer-events-none text-[#10B981]">
-                <Zap className="w-24 h-24 stroke-[1.5]" />
-              </div>
-
-              <div className="relative z-10 space-y-3 max-w-2xl">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-lg bg-gradient-to-r from-[#10B981]/15 to-[#34D399]/15 border border-[#10B981]/25 text-[#34D399] text-[10px] font-bold uppercase tracking-wider select-none">
-                  <Zap className="w-3.5 h-3.5" />
-                  Performance Metrics
-                </div>
-                <h1 className="text-3xl md:text-4xl font-black tracking-tight text-white leading-none mt-1">
-                  Deep Sessions
-                </h1>
-                <p className="text-slate-400 text-sm font-medium">
-                  Record, review and analyze your deep work sessions.
-                </p>
-              </div>
-
-              {/* Action Toolbar */}
-              <div className="relative z-10 flex items-center justify-between border-t border-white/5 pt-4 mt-6">
-                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
-                  Analytics Framework v1.0
-                </span>
-                
-                <div className="flex items-center gap-2 bg-blue-500/10 border border-blue-500/20 px-3 py-1.5 rounded-xl text-[10px] font-bold text-blue-400 uppercase tracking-wider shrink-0">
-                  <span className="h-1.5 w-1.5 rounded-full bg-blue-400 animate-pulse shadow-[0_0_8px_rgba(59,130,246,0.6)]" />
-                  ENTRAINING METRICS
-                </div>
+            {/* Header */}
+            <header className="relative w-full py-4 flex flex-col justify-between min-h-[100px]">
+              <div className="space-y-2">
+                <h1 className="text-3xl font-black tracking-tight leading-none">Deep Sessions</h1>
+                <p className="text-muted-foreground text-sm font-medium">Hyper-focus timer and detailed statistical tracking of your deep work capacity.</p>
               </div>
             </header>
 
-            {/* Main Interactive Screen with Glassmorphic In-Development Shield */}
-            <div className="relative rounded-[32px] border border-border/80 bg-black/45 p-8 md:p-12 min-h-[400px] flex flex-col justify-between overflow-hidden group">
+            <div className="grid grid-cols-1 xl:grid-cols-12 gap-8">
               
-              {/* Glassmorphic In-Development Overlay */}
-              <div className="absolute inset-0 z-20 flex flex-col items-center justify-center p-8 bg-black/80 backdrop-blur-[6px] border border-white/5 text-center space-y-6">
-                <div className="w-14 h-14 rounded-full bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400 shadow-[0_0_25px_rgba(59,130,246,0.2)] animate-pulse">
-                  <Hourglass className="w-6 h-6 animate-spin [animation-duration:4s]" />
-                </div>
-                
-                <div className="space-y-2 max-w-lg">
-                  <span className="text-xs font-black text-blue-450 uppercase tracking-[0.25em] block">
-                    Metrics System In Development
-                  </span>
-                  <h3 className="text-lg md:text-xl font-bold text-white tracking-tight">Advanced Analytics Coming Soon</h3>
-                  <p className="text-xs md:text-sm text-slate-500 leading-relaxed font-semibold px-4">
-                    Our team is building an advanced brain-state metrics tracker. Be the first to try when compiled.
-                  </p>
-                </div>
-
-                <Button 
-                  onClick={triggerEarlyAccess}
-                  className="px-8 h-12 bg-blue-500 hover:bg-blue-600 text-white font-extrabold uppercase tracking-widest text-[10px] rounded-2xl transition-all shadow-[0_0_20px_rgba(59,130,246,0.15)]"
-                >
-                  Request Early Access
-                </Button>
-              </div>
-
-              {/* FAKED UNDERLYING LAYOUT (Visually gorgeous but blurred and inactive) */}
-              <div className="space-y-6 filter blur-[2px] opacity-20 select-none pointer-events-none w-full">
-                <div className="grid grid-cols-3 gap-4">
-                  {[1, 2, 3].map((i) => (
-                    <div key={i} className="p-6 rounded-2xl bg-white/5 border border-white/5 space-y-2">
-                      <span className="text-[10px] text-slate-400 font-bold uppercase">Session #{i}04</span>
-                      <p className="text-2xl font-black text-white">90 mins</p>
-                    </div>
-                  ))}
-                </div>
-                <div className="h-44 bg-white/5 border border-white/5 rounded-2xl flex items-center justify-center">
-                  <span className="text-slate-500 font-mono text-xs">Acoustic Signal Waveform Graph</span>
-                </div>
-              </div>
-
-            </div>
-
-            {/* --- Highly Prominent Glassmorphic Request Custom Tool Card --- */}
-            <div className="relative rounded-[32px] overflow-hidden border border-emerald-500/15 bg-gradient-to-br from-emerald-500/[0.03] via-slate-950/40 to-black/90 backdrop-blur-2xl p-8 md:p-10 group shadow-[0_0_60px_rgba(0,0,0,0.85)]">
-              <div className="absolute -top-12 -right-12 w-40 h-40 bg-emerald-500/5 rounded-full blur-3xl group-hover:bg-emerald-500/10 transition-all duration-700 pointer-events-none" />
-
-              <div className="relative z-10 flex flex-col lg:flex-row items-start lg:items-center justify-between gap-8">
-                
-                {/* Text Block */}
-                <div className="space-y-3.5 max-w-xl text-left">
-                  <div className="flex items-center gap-2.5">
-                    <div className="p-1.5 rounded-lg bg-emerald-500/10 text-emerald-450 border border-emerald-500/20">
-                      <Wrench className="w-4 h-4" />
-                    </div>
-                    <span className="text-[9px] font-bold text-emerald-450 uppercase tracking-widest">Co-Forge the Platform</span>
+              {/* Left Column: Pomodoro Timer */}
+              <div className="xl:col-span-5">
+                <div className="soft-card h-full flex flex-col items-center justify-center py-16 space-y-12">
+                  
+                  <div className="flex gap-2 p-1.5 bg-secondary/30 rounded-2xl border">
+                    <button 
+                      onClick={() => setTimerMode("focus")}
+                      className={cn("flex items-center gap-2 px-5 py-2 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all", mode === "focus" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground")}
+                    >
+                      <Zap className="w-3.5 h-3.5" /> Focus
+                    </button>
+                    <button 
+                      onClick={() => setTimerMode("break")}
+                      className={cn("flex items-center gap-2 px-5 py-2 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all", mode === "break" ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground")}
+                    >
+                      <Coffee className="w-3.5 h-3.5" /> Break
+                    </button>
                   </div>
-                  <h2 className="text-2xl md:text-3xl font-extrabold text-white tracking-tight leading-none">
-                    Request Similar Feature
-                  </h2>
-                  <p className="text-slate-400 text-xs md:text-sm leading-relaxed font-semibold">
-                    Have an idea for a feature that would help you forge stronger? Our team is building the arsenal. Submit your request and we’ll consider it for future development.
-                  </p>
+
+                  <div className="text-7xl lg:text-8xl font-black tracking-tighter tabular-nums">
+                    {formatTime(timeLeft)}
+                  </div>
+
+                  <div className="flex gap-4 w-full max-w-[280px]">
+                    <button 
+                      onClick={toggleTimer}
+                      className={cn(
+                        "flex-1 h-14 rounded-2xl font-bold uppercase tracking-widest text-[11px] transition-all border",
+                        isActive ? "bg-secondary text-foreground hover:bg-secondary/80" : "bg-primary text-primary-foreground hover:bg-primary/90"
+                      )}
+                    >
+                      {isActive ? "Pause" : "Start Session"}
+                    </button>
+                    <button 
+                      onClick={resetTimer}
+                      className="h-14 w-14 rounded-2xl bg-secondary/30 hover:bg-secondary text-muted-foreground hover:text-foreground flex items-center justify-center transition-all border"
+                    >
+                      <RotateCcw className="w-4 h-4" />
+                    </button>
+                  </div>
+
+                </div>
+              </div>
+
+              {/* Right Column: Statistics and Graphs */}
+              <div className="xl:col-span-7 space-y-8">
+                
+                {/* Stats Grid */}
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                  <div className="soft-card p-5 space-y-3">
+                    <div className="flex items-center gap-2 text-muted-foreground">
+                      <Clock className="w-3.5 h-3.5" />
+                      <span className="text-[9px] font-bold uppercase tracking-widest">Total Focus</span>
+                    </div>
+                    <p className="text-2xl font-black">{stats.totalFocus}</p>
+                  </div>
+                  <div className="soft-card p-5 space-y-3">
+                    <div className="flex items-center gap-2 text-muted-foreground">
+                      <Target className="w-3.5 h-3.5" />
+                      <span className="text-[9px] font-bold uppercase tracking-widest">Sessions</span>
+                    </div>
+                    <p className="text-2xl font-black">{stats.totalSessions}</p>
+                  </div>
+                  <div className="soft-card p-5 space-y-3">
+                    <div className="flex items-center gap-2 text-muted-foreground">
+                      <Flame className="w-3.5 h-3.5" />
+                      <span className="text-[9px] font-bold uppercase tracking-widest">Streak</span>
+                    </div>
+                    <p className="text-2xl font-black">{stats.currentStreak} Days</p>
+                  </div>
+                  <div className="soft-card p-5 space-y-3">
+                    <div className="flex items-center gap-2 text-muted-foreground">
+                      <Activity className="w-3.5 h-3.5" />
+                      <span className="text-[9px] font-bold uppercase tracking-widest">Daily Avg</span>
+                    </div>
+                    <p className="text-2xl font-black">{stats.dailyAverage}</p>
+                  </div>
                 </div>
 
-                {/* Form & Button Block */}
-                <div className="w-full lg:w-88 space-y-3 shrink-0">
-                  {showRequestSuccess ? (
-                    <div className="p-5 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-center space-y-2 animate-in zoom-in-95">
-                      <CheckCircle2 className="w-6 h-6 text-emerald-400 mx-auto" />
-                      <p className="text-xs font-bold text-white">Directive Submitted</p>
-                      <p className="text-[10px] text-slate-450 leading-normal">Our engineering team has received your custom feature blueprint.</p>
+                {/* Graph Card */}
+                <div className="soft-card space-y-8">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 bg-secondary rounded-lg border">
+                      <CalendarDays className="w-4 h-4" />
                     </div>
-                  ) : (
-                    <form onSubmit={handleRequestSubmit} className="space-y-3">
-                      <div className="relative flex items-center">
-                        <input 
-                          type="text" 
-                          placeholder="Describe your ideal analytics feature..."
-                          value={requestText}
-                          onChange={(e) => setRequestText(e.target.value)}
-                          required
-                          className="w-full h-12 bg-black/60 border border-white/5 focus:border-emerald-500/35 rounded-xl pl-4 pr-10 text-xs text-white placeholder:text-slate-650 outline-none transition-all font-semibold"
-                        />
-                        <Send className="w-4 h-4 text-slate-600 absolute right-3 pointer-events-none" />
+                    <h3 className="text-lg font-bold tracking-tight">7-Day Focus Distribution</h3>
+                  </div>
+
+                  <div className="h-64 flex items-end justify-between gap-2 pt-6">
+                    {weeklyData.map((data, i) => (
+                      <div key={i} className="flex-1 flex flex-col items-center gap-3 h-full justify-end group">
+                        <div className="w-full max-w-[40px] bg-secondary/30 rounded-t-lg relative flex items-end h-full">
+                          <div 
+                            className="w-full bg-primary rounded-t-lg transition-all flex flex-col items-center pt-2 group-hover:opacity-80" 
+                            style={{ height: data.height }} 
+                          >
+                            <span className="opacity-0 group-hover:opacity-100 transition-opacity text-[8px] font-bold text-primary-foreground">
+                              {data.minutes}m
+                            </span>
+                          </div>
+                        </div>
+                        <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest h-4">
+                          {data.day}
+                        </span>
                       </div>
-                      <Button 
-                        type="submit"
-                        disabled={isSubmitting}
-                        className="w-full h-12 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-background font-extrabold uppercase tracking-widest text-[10px] transition-all flex items-center justify-center gap-2 shadow-lg shadow-emerald-500/10"
-                      >
-                        {isSubmitting ? "Transmitting..." : "Submit Custom Blueprint"}
-                        <ArrowRight className="w-3.5 h-3.5" />
-                      </Button>
-                    </form>
-                  )}
+                    ))}
+                  </div>
+
                 </div>
 
               </div>
+
             </div>
-
           </main>
-
         </div>
-
       </div>
     </div>
   );

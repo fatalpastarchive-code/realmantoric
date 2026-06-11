@@ -263,35 +263,10 @@ export default function PrivateWorkspacePage() {
           <main className="lg:col-span-5 xl:col-span-6 space-y-8 pb-20">
             
             {/* Header: Private Workspace */}
-            <header className="relative w-full rounded-3xl overflow-hidden border border-white/5 bg-[#121212] p-6 sm:p-8 flex flex-col justify-between min-h-[160px] md:min-h-[180px] shadow-2xl">
-              <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/30 to-blue-500/5 pointer-events-none" />
-              <div className="absolute right-8 top-1/2 -translate-y-1/2 opacity-[0.04] scale-[2.5] pointer-events-none text-blue-500">
-                <Lock className="w-24 h-24 stroke-[1.5]" />
-              </div>
-
-              <div className="relative z-10 space-y-3 max-w-2xl">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-lg bg-gradient-to-r from-blue-500/15 to-blue-400/15 border border-blue-500/25 text-blue-400 text-[10px] font-bold uppercase tracking-wider select-none">
-                  <Lock className="w-3.5 h-3.5" />
-                  SECURED PRIVATE VAULT
-                </div>
-                <h1 className="text-3xl md:text-4xl font-black tracking-tight text-white leading-none mt-1">
-                  Private Sanctum
-                </h1>
-                <p className="text-slate-400 text-sm font-medium">
-                  Personal metrics, chemical balancing, and private reflections.
-                </p>
-              </div>
-
-              {/* Action Toolbar */}
-              <div className="relative z-10 flex items-center justify-between border-t border-white/5 pt-4 mt-6">
-                <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
-                  Secure Enclave v1.0
-                </span>
-                
-                <div className="flex items-center gap-2 bg-blue-500/10 border border-blue-500/20 px-3 py-1.5 rounded-xl text-[10px] font-bold text-blue-400 uppercase tracking-wider shrink-0">
-                  <span className="h-1.5 w-1.5 rounded-full bg-blue-400 animate-pulse shadow-[0_0_8px_rgba(59,130,246,0.6)]" />
-                  ENCRYPTED
-                </div>
+            <header className="relative w-full py-4 flex flex-col justify-between min-h-[100px]">
+              <div className="space-y-2">
+                <h1 className="text-3xl font-black tracking-tight leading-none">Private Sanctum</h1>
+                <p className="text-muted-foreground text-sm font-medium">Personal metrics, chemical balancing, and private reflections.</p>
               </div>
             </header>
 

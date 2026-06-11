@@ -7,10 +7,10 @@ import { useClerk, useUser } from "@clerk/nextjs";
 import { cn } from "@/lib/utils";
 
 const THEMES = [
-  { id: "default", name: "Deep Onyx", primary: "#10B981", desc: "Premium Green" },
-  { id: "emerald", name: "M. Emerald", primary: "#5EA878", desc: "Emerald Green" },
-  { id: "steel", name: "Obsidian Steel", primary: "#7A93B0", desc: "Metallic Grey" },
-  { id: "void", name: "Void", primary: "#D4D4D8", desc: "Pure Black" },
+  { id: "default", name: "Onyx", primary: "#FFFFFF", desc: "Pure B&W" },
+  { id: "emerald", name: "Emerald", primary: "#10B981", desc: "Green Accent" },
+  { id: "steel", name: "Steel", primary: "#60A5FA", desc: "Blue Accent" },
+  { id: "void", name: "Void", primary: "#F4F4F5", desc: "Zero Color" },
 ];
 
 export function ProfileDropdown() {
@@ -23,6 +23,12 @@ export function ProfileDropdown() {
   useEffect(() => {
     const savedTheme = localStorage.getItem("mantoric-theme") || "default";
     setActiveTheme(savedTheme);
+    
+    const handleThemeChange = () => {
+      setActiveTheme(localStorage.getItem("mantoric-theme") || "default");
+    };
+    window.addEventListener("theme-changed", handleThemeChange);
+    return () => window.removeEventListener("theme-changed", handleThemeChange);
   }, []);
 
   // Close dropdown on click outside

@@ -1,18 +1,17 @@
 "use client";
 
 import React, { useState, useEffect, useMemo } from "react";
-import { 
-  Plus, 
-  Trash2, 
-  Flame, 
-  Activity, 
-  CheckCircle2, 
-  ChevronLeft, 
+import {
+  Plus,
+  Trash2,
+  Flame,
+  Activity,
+  CheckCircle2,
+  ChevronLeft,
   ChevronRight,
   Info,
   Sparkles,
   Trophy,
-  Activity,
   X,
   Target,
   Dumbbell,
@@ -95,7 +94,7 @@ export function HabitTracker() {
   const [data, setData] = useState<HabitData>({ habits: [], records: {} });
   const [isLoaded, setIsLoaded] = useState(false);
   const [viewMode, setViewMode] = useState<"Monthly" | "Weekly">("Monthly");
-  
+
   // Form State
   const [newHabitName, setNewHabitName] = useState("");
   const [newHabitCategory, setNewHabitCategory] = useState<Category>("Discipline");
@@ -124,7 +123,7 @@ export function HabitTracker() {
   useEffect(() => {
     if (isLoaded) {
       localStorage.setItem("mantoric_habits", JSON.stringify(data));
-      
+
       // Sync logic for Home page Daily Goals
       const today = getTodayStr();
       const completedToday = data.records[today] || [];
@@ -177,8 +176,8 @@ export function HabitTracker() {
     setData(prev => {
       const dayRecords = prev.records[date] || [];
       const isCompleted = dayRecords.includes(habitId);
-      
-      const newDayRecords = isCompleted 
+
+      const newDayRecords = isCompleted
         ? dayRecords.filter(id => id !== habitId)
         : [...dayRecords, habitId];
 
@@ -218,12 +217,12 @@ export function HabitTracker() {
 
     const today = getTodayStr();
     let monthCompleted = 0;
-    
+
     // Monthly completion
     const monthDays = [];
     const count = getDaysInMonth(year, month);
     for (let i = 1; i <= count; i++) monthDays.push(formatDate(new Date(year, month, i)));
-    
+
     monthDays.forEach(date => {
       monthCompleted += (data.records[date] || []).length;
     });
@@ -280,14 +279,14 @@ export function HabitTracker() {
                 <X className="w-6 h-6" />
               </Button>
             </div>
-            
+
             <form onSubmit={addHabit} className="space-y-8">
               <div className="space-y-3">
                 <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 ml-1">Habit Identification</Label>
-                <Input 
-                  value={newHabitName} 
+                <Input
+                  value={newHabitName}
                   onChange={(e) => setNewHabitName(e.target.value)}
-                  placeholder="e.g. 5AM Cold Start" 
+                  placeholder="e.g. 5AM Cold Start"
                   className="bg-black/40 border-white/[0.08] rounded-2xl h-14 px-6 text-white placeholder:text-slate-600 focus:border-primary/50 transition-all"
                 />
               </div>
@@ -295,7 +294,7 @@ export function HabitTracker() {
               <div className="grid grid-cols-2 gap-6">
                 <div className="space-y-3">
                   <Label className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 ml-1">Domain</Label>
-                  <Select value={newHabitCategory} onValueChange={(val: Category) => setNewHabitCategory(val)}>
+                  <Select value={newHabitCategory} onValueChange={(val) => val && setNewHabitCategory(val as Category)}>
                     <SelectTrigger className="bg-black/40 border-white/[0.08] rounded-2xl h-14 px-6">
                       <SelectValue placeholder="Domain" />
                     </SelectTrigger>
@@ -383,7 +382,7 @@ export function HabitTracker() {
                 </button>
               ))}
             </div>
-            
+
             <div className="flex items-center gap-4">
               <Button variant="ghost" size="icon" className="rounded-xl border border-white/5 hover:bg-white/5" onClick={() => setCurrentDate(new Date(year, month - 1))}>
                 <ChevronLeft className="w-4 h-4" />
@@ -397,7 +396,7 @@ export function HabitTracker() {
             </div>
           </div>
 
-          <Button 
+          <Button
             onClick={() => setIsModalOpen(true)}
             className="bg-primary hover:bg-primary/90 text-black font-black rounded-2xl h-12 px-8 gap-3 shadow-2xl shadow-primary/10 uppercase tracking-widest text-xs"
           >
@@ -484,15 +483,15 @@ export function HabitTracker() {
                               onClick={() => toggleHabit(habit.id, date)}
                               className={cn(
                                 "w-10 h-10 rounded-2xl border transition-all duration-500 flex items-center justify-center mx-auto",
-                                isCompleted 
-                                  ? "shadow-lg scale-95" 
+                                isCompleted
+                                  ? "shadow-lg scale-95"
                                   : "bg-black/40 border-white/[0.03] text-transparent",
                                 isCompleted && config.bg.replace('10', '40'),
                                 isCompleted && config.border.replace('20', '50'),
                                 isCompleted && config.color,
                                 !isToday && "cursor-default opacity-60"
                               )}
-                              style={isCompleted ? { 
+                              style={isCompleted ? {
                                 backgroundColor: `${config.accent}20`,
                                 borderColor: `${config.accent}40`,
                                 color: config.accent,

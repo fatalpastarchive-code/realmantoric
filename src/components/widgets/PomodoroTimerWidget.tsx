@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
-import { Play, Pause, RotateCcw, Zap, Coffee, ShieldAlert } from "lucide-react";
+import { Play, Pause, RotateCcw, Zap, Coffee, ShieldAlert, Minimize2, Maximize2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -9,6 +9,7 @@ export function PomodoroTimerWidget() {
   const [mode, setMode] = useState<"focus" | "break">("focus");
   const [timeLeft, setTimeLeft] = useState(25 * 60);
   const [isActive, setIsActive] = useState(false);
+  const [isFullScreen, setIsFullScreen] = useState(false);
 
   // Persistence in localStorage
   useEffect(() => {
@@ -36,6 +37,7 @@ export function PomodoroTimerWidget() {
       setTimeLeft(t => t - 1);
     } else {
       setIsActive(false);
+      setIsFullScreen(false);
       // Play sound or notification could go here
     }
   }, [timeLeft]);
@@ -52,18 +54,27 @@ export function PomodoroTimerWidget() {
     setMode("focus");
     setTimeLeft(25 * 60);
     setIsActive(true);
+    setIsFullScreen(true);
   };
 
   const startBreak = () => {
     setMode("break");
     setTimeLeft(5 * 60);
     setIsActive(true);
+    setIsFullScreen(true);
   };
 
-  const toggleTimer = () => setIsActive(!isActive);
+  const toggleTimer = () => {
+    const newState = !isActive;
+    setIsActive(newState);
+    if (newState) {
+      setIsFullScreen(true);
+    }
+  };
 
   const resetTimer = () => {
     setIsActive(false);
+    setIsFullScreen(false);
     setTimeLeft(mode === "focus" ? 25 * 60 : 5 * 60);
   };
 
@@ -74,10 +85,30 @@ export function PomodoroTimerWidget() {
   };
 
   return (
-    <div className="flex flex-col items-center space-y-10">
+    <div className={cn(
+      "flex flex-col items-center transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]",
+      isFullScreen 
+        ? "fixed inset-0 z-[100] bg-background/95 backdrop-blur-2xl justify-center space-y-16 p-8" 
+        : "relative space-y-10"
+    )}>
       
+      {/* Fullscreen Minimize Button */}
+      {isFullScreen && (
+        <Button 
+          variant="ghost" 
+          size="icon"
+          onClick={() => setIsFullScreen(false)}
+          className="absolute top-8 right-8 w-12 h-12 rounded-2xl bg-white/[0.05] border border-white/10 text-white/50 hover:text-white hover:bg-white/10 transition-all z-50"
+        >
+          <Minimize2 className="w-5 h-5" />
+        </Button>
+      )}
+
       {/* Mode Switcher */}
-      <div className="flex gap-3 p-2 bg-white/[0.02] rounded-2xl border border-white/[0.06] shadow-inner">
+      <div className={cn(
+        "flex gap-3 p-2 bg-white/[0.02] rounded-2xl border border-white/[0.06] shadow-inner transition-all",
+        isFullScreen ? "scale-125" : "scale-100"
+      )}>
         <button 
           onClick={startFocus}
           className={cn(
@@ -105,15 +136,24 @@ export function PomodoroTimerWidget() {
       </div>
 
       {/* Main Timer Display */}
-      <div className="relative group">
-        <div className="absolute -inset-8 bg-emerald-500/5 blur-[60px] opacity-0 group-hover:opacity-100 transition-opacity duration-1000" />
-        <div className="text-8xl font-black tracking-tighter text-white tabular-nums relative drop-shadow-2xl">
+      <div className="relative group flex items-center justify-center">
+        <div className={cn(
+          "absolute bg-emerald-500/5 blur-[60px] opacity-0 group-hover:opacity-100 transition-all duration-1000",
+          isFullScreen ? "-inset-20" : "-inset-8"
+        )} />
+        <div className={cn(
+          "font-black tracking-tighter text-white tabular-nums relative drop-shadow-2xl transition-all duration-700 ease-out",
+          isFullScreen ? "text-[120px] md:text-[250px] leading-none" : "text-8xl"
+        )}>
           {formatTime(timeLeft)}
         </div>
       </div>
 
       {/* Controls */}
-      <div className="flex items-center gap-4 w-full">
+      <div className={cn(
+        "flex items-center gap-4 transition-all duration-700",
+        isFullScreen ? "w-[400px]" : "w-full"
+      )}>
         <Button 
           onClick={toggleTimer}
           className={cn(
@@ -133,11 +173,24 @@ export function PomodoroTimerWidget() {
         >
           <RotateCcw className="w-5 h-5" />
         </Button>
+        
+        {!isFullScreen && (
+          <Button 
+            variant="ghost" 
+            onClick={() => setIsFullScreen(true)}
+            className="w-16 h-16 rounded-[22px] bg-white/[0.02] border border-white/[0.08] text-white/10 hover:text-white hover:bg-white/5 transition-all"
+          >
+            <Maximize2 className="w-5 h-5" />
+          </Button>
+        )}
       </div>
 
       {/* Motivation Tag */}
-      <div className="flex items-center gap-3 text-[9px] font-black uppercase tracking-[0.4em] text-white/10">
-        <ShieldAlert className="w-3 h-3" />
+      <div className={cn(
+        "flex items-center gap-3 font-black uppercase tracking-[0.4em] transition-all duration-700",
+        isFullScreen ? "text-[11px] text-white/30" : "text-[9px] text-white/10"
+      )}>
+        <ShieldAlert className={cn(isFullScreen ? "w-4 h-4" : "w-3 h-3")} />
         {mode === "focus" ? "Stay focused, brother." : "Recharge for the next forge."}
       </div>
     </div>

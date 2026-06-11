@@ -15,7 +15,8 @@ import {
   Lock,
   ShieldAlert,
   Calendar,
-  BookOpen
+  BookOpen,
+  Palette
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -42,6 +43,18 @@ export function Topbar() {
     { label: "Deep Sessions", href: "/work/deep-sessions", icon: Zap },
     { label: "Weekly Review", href: "/work/weekly-review", icon: Calendar },
   ];
+
+  const THEMES = ["default", "emerald", "steel", "void"];
+  const cycleTheme = () => {
+    const current = document.documentElement.getAttribute("data-theme") || "default";
+    const currentIndex = THEMES.indexOf(current);
+    const nextIndex = (currentIndex + 1) % THEMES.length;
+    const nextTheme = THEMES[nextIndex];
+    document.documentElement.setAttribute("data-theme", nextTheme);
+    localStorage.setItem("mantoric-theme", nextTheme);
+    // Dispatch custom event so ProfileDropdown syncs if needed
+    window.dispatchEvent(new Event("theme-changed"));
+  };
 
   return (
     <>
@@ -88,6 +101,16 @@ export function Topbar() {
 
           <div className="flex items-center gap-2">
             
+            {/* Quick Theme Switcher */}
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              onClick={cycleTheme}
+              className="h-10 w-10 rounded-xl text-muted-foreground hover:text-white hover:bg-white/5"
+            >
+              <Palette className="h-4 w-4" />
+            </Button>
+
             <Button variant="ghost" size="icon" className="h-10 w-10 rounded-xl text-muted-foreground hover:text-white hover:bg-white/5 relative">
               <Bell className="h-5 w-5" />
               <span className="absolute top-3 right-3 h-1.5 w-1.5 rounded-full bg-primary" />
@@ -175,15 +198,6 @@ export function Topbar() {
               </nav>
             </div>
           )}
-
-          {/* Core Signature Card */}
-          <div className="soft-card bg-secondary/15 p-5 rounded-2xl space-y-3 mt-auto">
-            <span className="text-[8px] font-bold text-primary uppercase tracking-[0.2em] block">Sovereign State</span>
-            <p className="text-xs text-slate-450 leading-relaxed italic">
-              "First say to yourself what you would be; and then do what you have to do."
-            </p>
-            <span className="text-[9px] font-bold text-slate-600 block text-right">— Epictetus</span>
-          </div>
 
         </div>
       )}

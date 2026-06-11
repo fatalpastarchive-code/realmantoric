@@ -23,12 +23,13 @@ import {
   Layers,
   Sparkles,
   Search,
-  BookMarked
+  BookMarked,
+  Bot
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { useDeepWork } from "@/context/DeepWorkContext";
 import { savePomodoroSession } from "@/app/actions/pomodoro";
+import Link from "next/link";
 
 // Types for Widget Grid System
 interface Widget {
@@ -39,10 +40,9 @@ interface Widget {
 }
 
 export default function WorkPage() {
-  const { isActive: isDeepWorkActive, toggleDeepWork } = useDeepWork();
-
   // Widget Order & Visibility State (Notion Simulation)
   const [widgets, setWidgets] = useState<Widget[]>([
+    { id: "mantoric_ai", title: "Mantoric AI Coach", visible: true, size: "full" },
     { id: "life_dashboard", title: "Life Dashboard", visible: true, size: "full" },
     { id: "knowledge_base", title: "Knowledge Base", visible: true, size: "half" },
     { id: "journal", title: "Advanced Journal", visible: true, size: "half" }
@@ -65,15 +65,7 @@ export default function WorkPage() {
     setWidgets(prev => prev.map(w => w.id === id ? { ...w, visible: !w.visible } : w));
   };
 
-  // State 1: Life Dashboard & Pomodoro State
-  const [minutes, setMinutes] = useState(25);
-  const [seconds, setSeconds] = useState(0);
-  const [isActive, setIsActive] = useState(false);
-  const [timerMode, setTimerMode] = useState<"work" | "break">("work");
-  const [workDuration, setWorkDuration] = useState(25);
-  const [breakDuration, setBreakDuration] = useState(5);
-  const [pomodoroCount, setPomodoroCount] = useState(0);
-  const timerRef = useRef<NodeJS.Timeout | null>(null);
+
 
   // State 4: Knowledge Base (Second Brain)
   const [notes, setNotes] = useState([
@@ -91,58 +83,7 @@ export default function WorkPage() {
     { id: "j1", text: "The morning breeze cleared my mind. Today I will focus on coding and philosophical readings. I have shut down all distractions.", mood: "Focused", time: "08:30" }
   ]);
 
-  // Load States from LocalStorage
-  useEffect(() => {
-    const savedPomos = localStorage.getItem("os-pomodoro-count");
-    if (savedPomos) setPomodoroCount(parseInt(savedPomos, 10));
-  }, []);
 
-  // Timer Tick Logic
-  useEffect(() => {
-    if (isActive) {
-      timerRef.current = setInterval(() => {
-        if (seconds > 0) {
-          setSeconds(seconds - 1);
-        } else if (seconds === 0) {
-          if (minutes === 0) {
-            setIsActive(false);
-            if (timerMode === "work") {
-              const newCount = pomodoroCount + 1;
-              setPomodoroCount(newCount);
-              localStorage.setItem("os-pomodoro-count", newCount.toString());
-              
-              savePomodoroSession({
-                userId: "honorable_member",
-                startTime: Date.now() - workDuration * 60 * 1000,
-                endTime: Date.now(),
-                duration: workDuration,
-                pomodoroCount: newCount,
-                completed: true
-              });
-              setTimerMode("break");
-              setMinutes(breakDuration);
-            } else {
-              setTimerMode("work");
-              setMinutes(workDuration);
-            }
-          } else {
-            setMinutes(minutes - 1);
-            setSeconds(59);
-          }
-        }
-      }, 1000);
-    } else {
-      if (timerRef.current) clearInterval(timerRef.current);
-    }
-    return () => { if (timerRef.current) clearInterval(timerRef.current); };
-  }, [isActive, minutes, seconds, timerMode, workDuration, breakDuration, pomodoroCount]);
-
-  const toggleTimer = () => setIsActive(!isActive);
-  const resetTimer = () => {
-    setIsActive(false);
-    setMinutes(timerMode === "work" ? workDuration : breakDuration);
-    setSeconds(0);
-  };
 
   const handleAddNote = (e: React.FormEvent) => {
     e.preventDefault();
@@ -176,11 +117,7 @@ export default function WorkPage() {
     setJournalText("");
   };
 
-  // SVGs / Circular Progress calculation
-  const totalSeconds = (timerMode === "work" ? workDuration : breakDuration) * 60;
-  const currentSeconds = minutes * 60 + seconds;
-  const progressPercent = totalSeconds > 0 ? (currentSeconds / totalSeconds) * 100 : 0;
-  const strokeDashoffset = 282.7 - (282.7 * progressPercent) / 100;
+
 
   return (
     <div className="min-h-screen bg-background text-foreground selection:bg-primary/20 selection:text-foreground relative">
@@ -198,14 +135,13 @@ export default function WorkPage() {
           <main className="lg:col-span-9 xl:col-span-10 space-y-6 pb-20">
             
             {/* Notion Style Premium Header banner */}
-            <header className="relative w-full rounded-3xl overflow-hidden border border-white/5 bg-[#121212] p-6 sm:p-8 flex flex-col justify-between min-h-[160px] md:min-h-[180px] shadow-2xl">
-              <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/30 to-[#10B981]/5 pointer-events-none" />
-              <div className="absolute right-8 top-1/2 -translate-y-1/2 opacity-[0.04] scale-[2.5] pointer-events-none text-primary">
+            <header className="relative w-full py-4 flex flex-col justify-between min-h-[120px]">
+              <div className="absolute right-8 top-1/2 -translate-y-1/2 opacity-[0.02] scale-[2.5] pointer-events-none text-primary">
                 <Layers className="w-24 h-24 stroke-[1.5]" />
               </div>
 
               <div className="relative z-10 space-y-3 max-w-2xl">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-lg bg-gradient-to-r from-[#10B981]/15 to-[#22D3EE]/15 border border-[#10B981]/25 text-[#34D399] text-[10px] font-bold uppercase tracking-wider select-none">
+                <div className="inline-flex items-center gap-2 text-primary text-[10px] font-bold uppercase tracking-wider select-none">
                   <Layers className="w-3.5 h-3.5" />
                   Personal Operating System
                 </div>
@@ -233,13 +169,13 @@ export default function WorkPage() {
                     <span>Customize</span>
                   </Button>
 
-                  <Button 
-                    onClick={toggleDeepWork}
-                    className="h-8.5 px-4 rounded-xl bg-gradient-to-r from-[#10B981] to-[#34D399] text-black font-extrabold text-[10px] uppercase tracking-wider transition-none shadow-md shadow-[#10B981]/15 flex items-center gap-1.5 cursor-pointer hover:scale-[1.02]"
+                  <Link 
+                    href="/work/deep-sessions"
+                    className="h-8.5 px-4 rounded-xl bg-white text-black font-extrabold text-[10px] uppercase tracking-wider shadow-sm flex items-center gap-1.5 cursor-pointer hover:bg-slate-200 transition-colors"
                   >
                     <Zap className="w-3.5 h-3.5" />
                     <span>Focus</span>
-                  </Button>
+                  </Link>
                 </div>
               </div>
             </header>
@@ -325,8 +261,7 @@ export default function WorkPage() {
                           
                           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
                             
-                            {/* Inner Col 1: Wisdom & State (6 Cols) */}
-                            <div className="lg:col-span-7 space-y-5">
+                            <div className="lg:col-span-12 space-y-5">
                               <div className="p-4 rounded-xl bg-black/40 border border-white/5 relative overflow-hidden">
                                 <span className="text-[9px] font-bold text-slate-500 uppercase tracking-widest block mb-1">Sanctum Quote</span>
                                 <p className="text-slate-200 text-sm italic font-medium leading-relaxed">
@@ -336,8 +271,8 @@ export default function WorkPage() {
                               
                               <div className="grid grid-cols-2 gap-4">
                                 <div className="p-4 rounded-xl bg-black/40 border border-white/5 space-y-1">
-                                  <span className="text-[9px] font-bold text-slate-500 uppercase tracking-widest block">Focus Sessions</span>
-                                  <span className="text-xl font-extrabold text-[#34D399]">{pomodoroCount} Sessions</span>
+                                  <span className="text-[9px] font-bold text-slate-500 uppercase tracking-widest block">System Status</span>
+                                  <span className="text-xl font-extrabold text-[#34D399]">All Systems Nominal</span>
                                 </div>
                                 <div className="p-4 rounded-xl bg-black/40 border border-white/5 space-y-1">
                                   <span className="text-[9px] font-bold text-slate-500 uppercase tracking-widest block">Affirmation</span>
@@ -346,45 +281,35 @@ export default function WorkPage() {
                               </div>
                             </div>
 
-                            {/* Inner Col 2: Integrated Pomodoro Timer widget (5 Cols) */}
-                            <div className="lg:col-span-5 p-4 rounded-xl bg-[#161616] border border-white/5 flex flex-col items-center space-y-4">
-                              <div className="flex justify-between items-center w-full">
-                                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Focus Timer</span>
-                                <span className="text-xs font-bold text-[#10B981]">Max Efficiency</span>
-                              </div>
+                          </div>
+                        </div>
+                      );
 
-                              <div className="relative w-36 h-36 flex items-center justify-center select-none">
-                                <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
-                                  <circle cx="50" cy="50" r="45" className="stroke-white/5 fill-transparent" strokeWidth="2.5" />
-                                  <circle cx="50" cy="50" r="45" className="stroke-[#10B981] fill-transparent transition-all duration-300" strokeWidth="2.5" strokeDasharray="282.7" strokeDashoffset={strokeDashoffset} strokeLinecap="round" />
-                                </svg>
-                                <div className="absolute flex flex-col items-center">
-                                  <span className="text-2xl font-bold tracking-tight text-white">
-                                    {minutes.toString().padStart(2, "0")}:{seconds.toString().padStart(2, "0")}
-                                  </span>
-                                  <span className="text-[8px] font-bold text-slate-500 uppercase mt-1">
-                                    {timerMode === "work" ? "Work" : "Break"}
-                                  </span>
-                                </div>
-                              </div>
-
-                              <div className="flex gap-2">
-                                <Button 
-                                  onClick={toggleTimer}
-                                  className="h-8 px-4 rounded-lg bg-[#10B981]/25 text-[#34D399] border border-[#10B981]/30 hover:bg-[#10B981]/40 text-[10px] font-bold uppercase transition-none cursor-pointer"
-                                >
-                                  {isActive ? "Stop" : "Start"}
-                                </Button>
-                                <Button 
-                                  onClick={resetTimer}
-                                  variant="outline"
-                                  className="h-8 w-8 rounded-lg border-white/5 bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white transition-none flex items-center justify-center cursor-pointer"
-                                >
-                                  <RotateCcw className="w-3.5 h-3.5" />
-                                </Button>
-                              </div>
+                    // 2. Mantoric AI Coach (Full Width widget)
+                    case "mantoric_ai":
+                      return (
+                        <div key={widget.id} className="col-span-2 md:col-span-12 soft-card relative overflow-hidden bg-gradient-to-br from-[#10B981]/10 via-[#121212] to-[#121212] border-[#10B981]/20 p-6 rounded-2xl shadow-xl space-y-6">
+                          <div className="absolute top-0 right-0 p-6 opacity-[0.03] scale-[3] pointer-events-none">
+                            <Bot className="w-16 h-16 text-[#10B981]" />
+                          </div>
+                          {renderWidgetHeader(Bot, "text-[#10B981]")}
+                          
+                          <div className="relative z-10 grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+                            <div className="md:col-span-8 space-y-4">
+                              <h4 className="text-xl font-black text-white tracking-tight">Your Personal Mastery Coach</h4>
+                              <p className="text-slate-400 text-sm leading-relaxed max-w-lg">
+                                Mantoric AI is designed to observe your habits, analyze your work sessions, and guide you towards peak performance using stoic principles and data-driven insights.
+                              </p>
                             </div>
-
+                            <div className="md:col-span-4 flex justify-end">
+                              <Link 
+                                href="/work/mantoric-ai"
+                                className="w-full md:w-auto px-6 py-3 rounded-xl bg-gradient-to-r from-[#10B981] to-[#34D399] text-black font-extrabold text-xs uppercase tracking-widest shadow-lg shadow-[#10B981]/20 flex items-center justify-center gap-2 transition-transform hover:scale-105"
+                              >
+                                <Bot className="w-4 h-4" />
+                                Start Session
+                              </Link>
+                            </div>
                           </div>
                         </div>
                       );
